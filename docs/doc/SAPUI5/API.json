@@ -1,0 +1,273 @@
+{
+	"info": {
+		"_postman_id": "71c62c70-3e65-42e4-8331-8ba01da4924e",
+		"name": "Shared APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 - Get a salesorder list for a soldto",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKey",
+						"type": "text",
+						"value": "lnsJ0j0B1sJ5trfTMbMqrmIqIarVApME"
+					}
+				],
+				"url": {
+					"raw": "https://dev.apimanagement.hana.ondemand.com:443/v0/salesOrder/salesOrderHeaders?$filter=soldTo eq '0001007260'&$format=json&$select=salesOrderID",
+					"protocol": "https",
+					"host": [
+						"dev",
+						"apimanagement",
+						"hana",
+						"ondemand",
+						"com"
+					],
+					"port": "443",
+					"path": [
+						"v0",
+						"salesOrder",
+						"salesOrderHeaders"
+					],
+					"query": [
+						{
+							"key": "$filter",
+							"value": "soldTo eq '0001007260'"
+						},
+						{
+							"key": "$format",
+							"value": "json"
+						},
+						{
+							"key": "$select",
+							"value": "salesOrderID"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "COT - Get Order",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKey",
+						"value": "{{APIKey}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/v0/orderTracking/Orders('103643812')?$format=json",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v0",
+						"orderTracking",
+						"Orders('103643812')"
+					],
+					"query": [
+						{
+							"key": "$format",
+							"value": "json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "COT - Get Order only Status",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKey",
+						"value": "{{APIKey}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/v0/orderTracking/Orders('103643812')?$format=json&$select=Status",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v0",
+						"orderTracking",
+						"Orders('103643812')"
+					],
+					"query": [
+						{
+							"key": "$format",
+							"value": "json"
+						},
+						{
+							"key": "$select",
+							"value": "Status"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "COT - Get items",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKey",
+						"value": "{{APIKey}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/v0/orderTracking/Orders('103643812')/GetOrderItems?$format=json",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v0",
+						"orderTracking",
+						"Orders('103643812')",
+						"GetOrderItems"
+					],
+					"query": [
+						{
+							"key": "$format",
+							"value": "json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "COT - Get Scheduled items",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKey",
+						"value": "{{APIKey}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/v0/orderTracking/OrderItems(Ordernumber='103640386',Itemnumber='000010')/GetScheduledItems?$format=json\n",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v0",
+						"orderTracking",
+						"OrderItems(Ordernumber='103640386',Itemnumber='000010')",
+						"GetScheduledItems"
+					],
+					"query": [
+						{
+							"key": "$format",
+							"value": "json\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "COT - Get Deliveries",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "APIKey",
+						"value": "{{APIKey}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/v0/orderTracking/OrderItems(Ordernumber='103643812',Itemnumber='000010')/GetDeliveries?$format=json",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v0",
+						"orderTracking",
+						"OrderItems(Ordernumber='103643812',Itemnumber='000010')",
+						"GetDeliveries"
+					],
+					"query": [
+						{
+							"key": "$format",
+							"value": "json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "COT - GET Multiple Orders",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/mixed;boundary=batch_002",
+						"type": "text"
+					},
+					{
+						"key": "APIKey",
+						"value": "{{APIKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "--batch_002\nContent-Type: application/http\nContent-Transfer-Encoding: binary\n\nGET Orders('103643812')?$format=json&$select=Status HTTP/1.1\n\nAccept: application/json\n--batch_002\nContent-Type: application/http\nContent-Transfer-Encoding: binary\n\nGET Orders('103643813')?$format=json&$select=Status HTTP/1.1\n\nAccept: application/json\n--batch_002--"
+				},
+				"url": {
+					"raw": "{{url}}/v0/orderTracking/$batch",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"v0",
+						"orderTracking",
+						"$batch"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "dedad31c-562f-4612-ba49-c46cec2233dc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9d81f664-4784-4e29-86e5-c90c1be822e0",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

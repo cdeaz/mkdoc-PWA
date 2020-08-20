@@ -1,0 +1,19 @@
+site_name: Build Your First PWA
+site_author: Chloé De Azevedo
+
+nav:
+    - Angular: 
+      - Introduction: Angular/about.md
+      - Start with Angular: Angular/setup.md
+      - Server-side Application: Angular/server.md
+      - Start the project: Angular/start.md
+    - SAPUI5: 
+      - Introduction: SAPUI5/about.md
+      - Start with SAPUI5: SAPUI5/setup.md
+      - Server-side Application: SAPUI5/server.md
+      - Start the project: SAPUI5/start.md
+    - Vue.js: 
+      - Introduction: VueJS/about.md
+      - Start with Vue.js: VueJS/setup.md
+      - Server-side Application: VueJS/server.md
+      - Start the project: VueJS/start.md
