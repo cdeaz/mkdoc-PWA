@@ -7,332 +7,551 @@ We will start to create a login page and a home page who will contains a list of
 
 ## Create a Login Page 
 ---
-So now create a folder `models`. Inside create `user.ts` file. 
 
-![models](/img/models.PNG)
+First of all, your file `App.vue` will contains this :
 
-#### User Model
-
-The user model is a small class that defines the properties of a user.
-
-```export 
-export class User {
-    id: number;
-    order: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    token?: string;
-}
 ```
+<template>
+  <div id="app">
+    <div class="m-flexContainer">
+      <div class="m-formContainer">
+        <LoginForm :title="headerText" />
+      </div>
+    </div>
+  </div>
+</template>
 
+<script>
+import LoginForm from "./components/LoginForm.vue";
 
-Create a folder `services`. Inside create `authentication.service.ts` file and `user.service.ts` file. 
+export default {
+  name: "app",
+  data() {
+    return {
+      headerText: "Authentification"
+    };
+  },
+  components: {
+    LoginForm
+  }
+};
+</script>
 
- 
-#### User Service
+<style lang="scss">
+/* GLOBAL SCSS IMPORT */
+@import "./scss/main.scss";
 
-The user service contains a method for getting all users from the api, I included it to demonstrate accessing a secure api endpoint with the http authorization header set after logging in to the application, the auth header is automatically set with basic authentication credentials by the basic authentication interceptor. The secure endpoint in the example is a fake one implemented in the fake backend provider.
-
-```import
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-
-import { environment } from '@environments/environment';
-import { User } from '@app/_models';
-
-@Injectable({ providedIn: 'root' })
-export class UserService {
-    constructor(private http: HttpClient) { }
-
-    getAll() {
-        return this.http.get<User[]>(`${environment.apiUrl}/users`);
-    }
-}
-```
-
-Create now a login component.
-
-![login](/img/login1.PNG)
-
-#### Login.component.html
-
-The login component template contains a number of custom order form with cusand password fields. It displays validation messages for invalid fields when the submit button is clicked. The form submit event is bound to the onSubmit() method of the login component.
-
-The component uses reactive form validation to validate the input fields.
+</style>
 
 ``` 
-<div class="col-md-6 offset-md-3 mt-5">
-    <div class="alert alert-info">
-         Costumer number : 0001007260 <br />
-        Costumer order : 0100010237
-    </div>
-    <div class="card">
-        <h4 class="card-header">Authentication</h4>
-        <div class="card-body">
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                <div class="form-group">
-                    <label for="number">Customer number</label>
-                    <input type="text" formControlName="number" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.number.errors }" />
-                    <div *ngIf="submitted && f.number.errors" class="invalid-feedback">
-                        <div *ngIf="f.order.errors.required">Customer number is required</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="order">Customer order</label>
-                    <input type="order" formControlName="order" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.order.errors }" />
-                    <div *ngIf="submitted && f.order.errors" class="invalid-feedback">
-                        <div *ngIf="f.order.errors.required">Customer order is required</div>
-                    </div>
-                </div>
-                <button [disabled]="loading" class="btn btn-primary">
-                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
-                    Login
-                </button>
-                <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
-            </form>
-        </div>
-    </div>
-</div>
-```
- 
-#### Login.component.ts
 
-The login component uses the authentication service to login to the application. If the user is already logged in they are automatically redirected to the home page.
+Then create a file `main.js` and `config.js` who will contains this :
 
-The loginForm: FormGroup object defines the form controls and validators, and is used to access data entered into the form. The FormGroup is part of the Angular Reactive Forms module and is bound to the login template above with the [formGroup]="loginForm" directive.
-
-```import
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { first } from 'rxjs/operators';
-
-import { AuthenticationService } from '@app/_services';
-
-@Component({ templateUrl: 'login.component.html' })
-export class LoginComponent implements OnInit {
-    loginForm: FormGroup;
-    loading = false;
-    submitted = false;
-    returnUrl: string;
-    error = '';
-
-    constructor(
-        private formBuilder: FormBuilder,
-        private route: ActivatedRoute,
-        private router: Router,
-        private authenticationService: AuthenticationService
-    ) { 
-        // redirect to home if already logged in
-        if (this.authenticationService.currentUserValue) { 
-            this.router.navigate(['/']);
-        }
-    }
-
-    ngOnInit() {
-        this.loginForm = this.formBuilder.group({
-            number: ['', Validators.required],
-            order: ['', Validators.required]
-        });
-
-        // get return url from route parameters or default to '/'
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    }
-
-    // convenience getter for easy access to form fields
-    get f() { return this.loginForm.controls; }
-
-    onSubmit() {
-        this.submitted = true;
-
-        // stop here if form is invalid
-        if (this.loginForm.invalid) {
-            return;
-        }
-
-        this.loading = true;
-        this.authenticationService.login(this.f.number.value, this.f.order.value)
-            .pipe(first())
-            .subscribe(
-                data => {
-                    this.router.navigate([this.returnUrl]);
-                },
-                error => {
-                    this.error = error;
-                    this.loading = false;
-                });
-    }
-}
-```
-Here the result :
-
-![login](/img/login.PNG)
- 
-#### App.component.html
-
-The app component template is the root component template of the application, it contains the main nav bar which is only displayed for authenticated users, and a router-outlet directive for displaying the contents of each view based on the current route / path.
+##### main.js
 
 ```
-<!-- nav -->
-<nav class="navbar navbar-expand navbar-dark bg-dark" *ngIf="currentUser">
-    <div class="navbar-nav">
-        <a class="nav-item nav-link" routerLink="/">Home</a>
-        <a class="nav-item nav-link" (click)="logout()">Logout</a>
-    </div>
-</nav>
+import Vue from "vue";
+import App from "./App.vue";
+import "./registerServiceWorker";
 
-<!-- main app container -->
-<div class="container">
-    <router-outlet></router-outlet>
-</div>
+import axios from 'axios'
+
+import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.min.css'
+import 'vue-material/dist/theme/default.css'
+
+Vue.use(VueMaterial)
+
+Vue.prototype.$axios = axios
+
+Vue.config.productionTip = false;
+
+new Vue({
+  render: h => h(App)
+}).$mount("#app");
+
+```
+
+##### config.js
+```
+System.config({
+    transpiler: 'plugin-babel',
+    meta: {
+      '*.vue': {
+        loader: 'vue-loader'
+      },
+    },
+    paths: {
+      'npm:': 'https://unpkg.com/'
+    },
+    map: {
+      'vue': 'npm:vue@2.6.3/dist/vue.esm.browser.js',
+      'vue-loader': 'npm:dx-systemjs-vue-browser@latest/index.js',
+      'devextreme': 'npm:devextreme@20.1',
+      'devextreme-vue': 'npm:devextreme-vue@20.1',
+      'jszip': 'npm:jszip@3.1.3/dist/jszip.min.js',
+      'quill': 'npm:quill@1.3.7/dist/quill.js',
+      'devexpress-diagram': 'npm:devexpress-diagram@1.0.9',
+      'devexpress-gantt': 'npm:devexpress-gantt@1.0.7',
+      'plugin-babel': 'npm:systemjs-plugin-babel@0/plugin-babel.js',
+      'systemjs-babel-build': 'npm:systemjs-plugin-babel@0/systemjs-babel-browser.js'
+    },
+    packages: {
+      'devextreme-vue': {
+        main: 'index.js'
+      },
+      'devextreme': {
+        defaultExtension: 'js'
+      },
+      'devextreme/events/utils': {
+        main: 'index'
+      },
+      'devextreme/events': {
+          main: 'index'
+      },
+    },
+    babelOptions: {
+      sourceMaps: false,
+      stage0: true
+    }
+  });
+  ```
+
+After that in your terminal, do a :
+`npm install`
+
+#### LoginForm.vue
+---
+
+Create First a file `LoginForm.vue` into your project, that will contain our authentication form.
+
+```
+<template>
+  <form class="m-loginForm">
+    <Header :title="title" />
+
+    <div class="m-loginForm__group">
+      <animated-input placeholder="Customer Number" animateBorder />
+    </div>
+
+    <div class="m-loginForm__group">
+      <animated-input
+        placeholder="Customer Order"
+        animateBorder
+        inputType="password"
+      />
+    </div>
+
+    <div class="m-loginForm__group -mg-lg">
+      <div class="m-loginForm__rememberWrapper">
+        <custom-checkbox
+          name="remember_me"
+          id="remember_me"
+          labelText="Remember Me"
+          checkbox="✔︎"
+        ></custom-checkbox>
+
+        <link-button href="#" linkText="Forgot Cust">
+        </link-button>
+      </div>
+    </div>
+
+
+    <submit-button>Log In</submit-button>
+
+     
+  <router-link to="/SalesList"> 
+  </router-link>
+
+  </form>
+
+</template>
+
+<script>
+import Header from "./inputs/Header.vue";
+import AnimatedInput from "./inputs/AnimatedInput.vue";
+import CustomCheckbox from "./inputs/CustomCheckbox.vue";
+import LinkButton from "./buttons/LinkButton.vue";
+import SubmitButton from "./buttons/SubmitButton.vue";
+
+export default {
+  data() {
+    return {
+      cnum: "000",
+      cord: "000"
+    };
+  },
+  components: {
+    Header,
+    AnimatedInput,
+    CustomCheckbox,
+    LinkButton,
+    SubmitButton
+  },
+  props: {
+    title: String
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+@import "@/scss/components/forms/_loginForm.scss";
+
+</style>
+
 ``` 
- 
-#### App.component.ts
 
-The app component is the root component of the application, it defines the root tag of the app as <app></app> with the selector property of the @Component() decorator.
+We will create then differents buttons and input so we can call them into our file `LoginForm.vue`.
 
-It subscribes to the currentUser observable in the authentication service so it can reactively show/hide the main navigation bar when the user logs in/out of the application. I didn't worry about unsubscribing from the observable here because it's the root component of the application, the only time the component will be destroyed is when the application is closed which would destroy any subscriptions as well.
+Into the folder `components` :
 
-The app component contains a logout() method which is called from the logout link in the main nav bar above to log the user out and redirect them to the login page.
+#### Folder Buttons
+---
+- Create a folder `buttons`,  `components`. Inside create `LinkButton.vue` and `SubmitButtons.vue` files. 
 
+
+##### LinkButton.vue
+---
 ```
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+<template>
+  <a class="a-linkButton">
+    <!-- We can add fonts, texts etc -->
+    <slot></slot>
+  </a>
+</template>
 
-import { AuthenticationService } from './_services';
-import { User } from './_models';
-
-@Component({ selector: 'app', templateUrl: 'app.component.html' })
-export class AppComponent {
-    currentUser: User;
-
-    constructor(
-        private router: Router,
-        private authenticationService: AuthenticationService
-    ) {
-        this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+<script>
+export default {
+  props: {
+    linkText: {
+      type: String,
+      required: true
     }
+  }
+};
+</script>
 
-    logout() {
-        this.authenticationService.logout();
-        this.router.navigate(['/login']);
+<style lang="scss" scoped>
+@import "@/scss/components/buttons/_linkButton.scss";
+
+</style>
+```
+
+##### SubmitButtons.vue
+--- 
+
+```
+<template>
+  <button type="submit" class="a-submitButton">
+    <slot></slot>
+  </button>
+</template>
+
+<style lang="scss" scoped>
+@import "@/scss/components/buttons/_submitButton.scss";
+
+</style>
+
+```
+
+
+#### Folder Inputs
+---
+- Create a other folder `inputs` , into it create `AnimatedInput.vue`, `Header.vue` and `CustomCheckBox.vue` files.
+
+
+##### AnimatedInput.vue
+---
+```
+<template>
+  <button type="submit" class="a-submitButton">
+    <slot></slot>
+  </button>
+</template>
+
+<style lang="scss" scoped>
+@import "@/scss/components/buttons/_submitButton.scss";
+
+</style>
+```
+
+##### Header.vue
+---
+```
+<template>
+  <h1 class="a-header">
+    {{ title }}
+  </h1>
+</template>
+
+<script>
+export default {
+  props: {
+    title: {
+      type: String,
+      required: true
     }
-}
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+@import "@/scss/components/inputs/_header.scss";
+
+</style>
 ```
- 
-#### App.module.ts
 
-The app module defines the root module of the application along with metadata about the module. For more info about angular 8 modules check out this page on the official docs site.
-
-This is where the fake backend provider is added to the application, to switch to a real backend simply remove the providers located below the comment // provider used to create fake backend.
-
-```import
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-
-// used to create fake backend
-import { fakeBackendProvider } from './_helpers';
-
-import { AppComponent } from './app.component';
-import { appRoutingModule } from './app.routing';
-
-import { BasicAuthInterceptor, ErrorInterceptor } from './_helpers';
-import { HomeComponent } from './home';
-import { LoginComponent } from './login';
-
-@NgModule({
-    imports: [
-        BrowserModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        appRoutingModule
-    ],
-    declarations: [
-        AppComponent,
-        HomeComponent,
-        LoginComponent
-    ],
-    providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-
-        // provider used to create fake backend
-        fakeBackendProvider
-    ],
-    bootstrap: [AppComponent]
-})
-export class AppModule { }
+#### CustomCheckBox.vue
+---
 ```
+<template>
+  <div class="a-customCheckbox">
+    <input
+      class="a-customCheckbox__confirm"
+      type="checkbox"
+      :checked="checked"
+      :name="name"
+      :id="id"
+    />
+
+    <label
+      class="a-customCheckbox__confirmLabel"
+      :data-content="checkbox"
+      :for="id"
+    >
+      <span class="a-customCheckbox__labelText">
+        {{ labelText }}
+      </span>
+    </label>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    name: {
+      type: String,
+      required: true
+    },
+    id: {
+      type: String,
+      required: true
+    },
+    labelText: {
+      type: String,
+      required: true
+    },
+    checkbox: {
+      type: String,
+      required: false
+      // \2713
+      // \f00c
+    },
+    checked: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+@import "@/scss/components/inputs/_customCheckbox.scss";
+
+</style>
+
+```
+
+### Design of our Login Page
+---
+
+We will do some design, some `SCSS`, create a folder name like that.
+
+Then create all of this folder inside it : 
+
+![scss](doc/VueJS/scss.PNG)
+
+Here the folder scss with all of his folder and files, you juste have to copy into your project.
+
+[scss files](doc/VueJS/scss.zip).
 
 ## Create the list of sales order
 ---
 
-Firstly, we will create a home component and also into the folder `home`, a `home.service.ts` in the folder home.
+Firstly, we will create a file `SalesList.vue`.
+
+#### SalesList.vue
+---
 
 ![home](/img/home.PNG)
 
 ```
-export class salesorder
-{
-    Id : number;
-    OrderId : string;
-    status: string;
-    date: string;
-    ship: string;
-    purchase: string;
-    soldto: string;
-    shipdate: string;
-    material: string;
-    quantities: string;
-    tracknum: string;
-
-}
-```
-#### Home.component.html
-
-The home component template will contains html and angular 8 template syntax for displaying a list of sales document.
-
-```
-<div class="card mt-4">
-
-    <h4 class="card-header">Customer order </h4>
-    <input type="text" #myInput [(ngModel)]="OrderId" (input)="Search()" />
-
-    <div class="card-body">
-      
-        <table class="table">
-            <tr>
-                <th>Sales document</th>
-                <th>Status</th>
-                <th>Order received date</th>
-                <th>Ship-to</th>
-                <th>Purchase order number</th>
-                <th>Sold-to party</th>
-                <th>Shipped date</th>
-                <th>Material</th>
-                <th>Quantities</th>
-                <th>Tracking number</th>
-            </tr>
-            <tr *ngFor='let o of salesorders'>
-                <td>{{o.OrderId}}</td>
-                <td>{{o.status}}</td>
-                <td>{{o.date}}</td>
-                <td>{{o.ship}}</td>
-                <td>{{o.purchase}}</td>
-                <td>{{o.soldto}}</td>
-                <td>{{o.shipdate}}</td>
-                <td>{{o.Material}}</td>
-                <td>{{o.quantities}}</td>
-                <td>{{o.tracknum}}</td>
-            </tr>
-        </table>
-        
+<template>
+  <div id="app">
+  
+   <nav class="navbar navbar-light bg-light justify-content-between">
+    <span class="go-back">
+      <md-button class="md-fab md-mini md-primary" @click="goBack">
+        <md-icon>chevron_left</md-icon>
+      </md-Button>
+    </span>
+    <a class="navbar-brand">Sales Orders</a>
+    <form class="form-inline">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    </nav>
+      <Table v-if="tableData" :theData="tableData" :config="config" :style="{height: '600px'}"/>
     </div>
 
-</div>
+</template>
+
+<script>
+import Table from './components/Table'
+
+export default {
+  name: 'FloatingButton',
+
+  components: {
+    Table
+  },
+  data: () => ({
+    tableData: undefined,
+    config: [
+      {
+        key: 'avatar',
+        title: 'SalesDoc.',
+        type: 'number'
+      },
+      {
+        key: 'name',
+        title: 'Status',
+        type: 'text'
+      },
+      {
+        key: 'city',
+        title: 'Ship-to',
+        type: 'text'
+      },
+      {
+        key: 'companyName',
+        title: 'Order received Date',
+        type: 'number'
+      },
+      {
+        key: 'createdAt',
+        title: 'Sold-To party',
+        type: 'number'
+      },
+      {
+        key: 'createdAt',
+        title: 'Shipped Date',
+        type: 'text'
+      },
+      {
+        key: 'createdAt',
+        title: 'Material',
+        type: 'text'
+      },
+      {
+        key: 'createdAt',
+        title: 'Quantities',
+        type: 'number'
+      },
+      {
+        key: 'createdAt',
+        title: 'Tracking Number',
+        type: 'number'
+      }
+    ]
+  }),
+  mounted () {
+    this.$axios.get('https://5e4b062d6eafb7001488c99e.mockapi.io/something123/users')
+    .then(({data}) => {
+      this.tableData = data
+    })
+  },
+  methods: {
+    goBack() {
+      return this.$router.go(-1);
+    }
+  }
+}
+</script>
+
+<style>
+
+body {
+  font-family: Helvetica, sans-serif;
+  font-weight: 400;
+}
+
+.table thead th {
+    vertical-align: middle;
+}
+
+.md-theme-default a:not(.md-button) {
+    color: #000;
+    color: var(--md-theme-default-primary-on-background, #000);
+}
+
+</style>
+
+```
+
+#### Table.vue
+
+Into the folder `components` create a file `Table.vue` it will displaying a list of sales document into a table.
+
+```
+<template>
+    <section class="table table-striped">
+       <div class="table-responsive"> 
+        <table class="table table-striped"> 
+            <thead>
+                <tr>
+                    <th v-for="(obj, ind) in config" :key="ind">
+                        {{ obj.title }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(row, index) in theData" :key="index">
+                    <td v-for="(obj, ind) in config" :key="ind">
+                        <span v-if="obj.type === 'text'">{{row[obj.key]}}</span>
+                        <span v-if="obj.type === 'date'">{{new Date(row[obj.key]).toLocaleDateString()}} </span>
+                        <figure v-if="obj.type === 'image'">
+                            <img :src="row[obj.key]" height="60px">
+                        </figure>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+       </div>
+    </section>
+</template>
+
+<script>
+export default {
+    props: ['theData', 'config'],
+}
+</script>
+
+<style lang="scss">
+
+.btn-outline-success {
+    color: #3b28a7;
+    border-color: #3b28a7;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #505050;
+}
+
+</style>
 ```
 #### Home.component.ts
 

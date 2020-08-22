@@ -1,25 +1,13 @@
 # Server-side application
 ---
 
-## Generate your Angular project
-
-
-```ng
-ng new angularpwa
-```
-
-Get inside the project directory
-
-```cd
-cd angularpwa
-```
 
 ## Adding Angular Material Design UI Library
 
 Adding a Material design library in Angular is very easy, It can be done by using just a single command. Run the following command from your terminal.
 
 ```cd
-ng add @angular/material
+npm install material
 ```
 
 Create a folder `helpers`. Get inside this folder and create `auth.guard.ts` file, `basic-auth.interceptor.ts` file,  `error.interceptor.ts` file and `fake-backend.ts` file.
