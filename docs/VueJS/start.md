@@ -115,7 +115,8 @@ System.config({
       stage0: true
     }
   });
-  ```
+  
+```
 
 After that in your terminal, do a :
 `npm install`
@@ -376,6 +377,11 @@ Here the folder scss with all of his folder and files, you juste have to copy in
 
 [scss files](doc/VueJS/scss.zip).
 
+Result :
+
+![login](/doc/VueJS/login.PNG)
+
+
 ## Create the list of sales order
 ---
 
@@ -384,7 +390,7 @@ Firstly, we will create a file `SalesList.vue`.
 #### SalesList.vue
 ---
 
-![home](/img/home.PNG)
+![saleslist](/doc/VueJS/salelist.PNG)
 
 ```
 <template>
@@ -497,7 +503,6 @@ body {
 }
 
 </style>
-
 ```
 
 #### Table.vue
@@ -553,54 +558,6 @@ export default {
 
 </style>
 ```
-#### Home.component.ts
-
-The home will show the list of sales document. We can also search the sales document we want.
-
-```
-import { Component } from '@angular/core';
-import { first } from 'rxjs/operators';
-import { salesorder } from '../home/home.service';
-
-import { User } from '@app/_models';
-import { UserService } from '@app/_services';
-
-@Component({ templateUrl: 'home.component.html' })
-export class HomeComponent {
-    salesorders : salesorder[] = [];
-    OrderId : string;
-    loading = false;
-    users: User[];
-
-    constructor(private userService: UserService) { }
-
-    ngOnInit() {
-        this.salesorders = [
-         
-            
-        ];
-        this.loading = true;
-        this.userService.getAll().pipe(first()).subscribe(users => {
-            this.loading = false;
-            this.users = users;
-
-        });
-    }
-
-    Search(){
-        if(this.OrderId !="")  {
-            this.salesorders = this.salesorders.filter(res=>{
-                return res.OrderId.toLocaleLowerCase().match(this.OrderId.toLocaleLowerCase());
-            });
-        }else if (this.OrderId == ""){
-          this.ngOnInit();  
-        }
-       
-    }
-}
-```
-
-Into `this.salesorders = [];` put the data from [this file](/img/data.txt).
 
 ## Adding PWA
 ---
