@@ -2,15 +2,16 @@
 ---
 
 
-## Adding Angular Material Design UI Library
+## Adding Axios
 
-Adding a Material design library in Angular is very easy, It can be done by using just a single command. Run the following command from your terminal.
+Vue.js is an excellent frontend javascript framework and its documentation is very clear and straight to the point. You can either choose to integrate Vue into a pre-existing application (a la JQuery) or build a Single Page Application (SPA) based on Webpack React.js style. Let's set up a very simple SPA here that calls a remote REST API using Node.js, Webpack, Vue Loader, Vue Router, and Axios.
+
 
 ```cd
-npm install material
+npm install axios
 ```
 
-Create a folder `helpers`. Get inside this folder and create `auth.guard.ts` file, `basic-auth.interceptor.ts` file,  `error.interceptor.ts` file and `fake-backend.ts` file.
+Create `file` file under `src`.
 
 ![helpers](/img/helpers.PNG)
 

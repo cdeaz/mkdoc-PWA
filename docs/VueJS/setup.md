@@ -2,8 +2,6 @@
 
 --- 
 
-
-
 ### Install the tools
 
 You must install the following tools if you do not already have them on your machine:
@@ -38,9 +36,6 @@ Vue provides an official CLI for quickly scaffolding ambitious Single Page Appli
 ```npm
 npm install -g @vue/cli
 
-# OR
-
-yarn global add @vue/cli
 ```
 
 

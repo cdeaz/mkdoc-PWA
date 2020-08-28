@@ -10,6 +10,8 @@ We will start to create a login page and a home page who will contains a list of
 
 First of all, your file `App.vue` will contains this :
 
+##### App.vue
+
 ```
 <template>
   <div id="app">
@@ -18,29 +20,55 @@ First of all, your file `App.vue` will contains this :
         <LoginForm :title="headerText" />
       </div>
     </div>
+    <div id="nav">
+            <router-link 
+            v-if="authenticated" 
+            to="/LoginForm" 
+            v-on:click.native="logout()" 
+            replace>Logout
+            </router-link>
+        </div>
+    <router-view @authenticated="setAuthenticated" />
   </div>
 </template>
 
 <script>
-import LoginForm from "./components/LoginForm.vue";
+import LoginForm from './components/LoginForm.vue';
 
 export default {
-  name: "app",
+  name: 'app',
   data() {
     return {
-      headerText: "Authentification"
-    };
+      headerText: 'Authentification',
+      authenticated: false,
+      mockAccount: {
+          cnum: "test",
+          cord: "test"
+      }
+    }
   },
-  components: {
-    LoginForm
-  }
+ mounted() {
+     if(!this.authenticated) {
+         this.$router.replace('/LoginForm');
+     }
+ },
+methods: {
+    setAuthenticated(status) {
+        this.authenticated = status;
+    },
+    logout() {
+        this.authenticated = false;
+    },
+},
+components: {
+    LoginForm,
+  },
 };
 </script>
 
 <style lang="scss">
 /* GLOBAL SCSS IMPORT */
-@import "./scss/main.scss";
-
+@import './scss/main.scss';
 </style>
 
 ``` 
@@ -50,25 +78,49 @@ Then create a file `main.js` and `config.js` who will contains this :
 ##### main.js
 
 ```
-import Vue from "vue";
-import App from "./App.vue";
-import "./registerServiceWorker";
+import Vue from 'vue';
+import App from './App.vue';
+import VueRouter from 'vue-router';
 
-import axios from 'axios'
+import LoginForm from './components/LoginForm.vue';
+import SalesList from './SalesList.vue';
 
-import VueMaterial from 'vue-material'
-import 'vue-material/dist/vue-material.min.css'
-import 'vue-material/dist/theme/default.css'
+import axios from 'axios';
+import VueMaterial from 'vue-material';
+import 'vue-material/dist/vue-material.min.css';
+import 'vue-material/dist/theme/default.css';
 
-Vue.use(VueMaterial)
+Vue.use(VueMaterial);
+Vue.use(VueRouter);
 
-Vue.prototype.$axios = axios
+Vue.prototype.$axios = axios;
 
 Vue.config.productionTip = false;
 
+
+const routes = [
+  
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginForm,
+    },
+    {
+      path: '/saleslist',
+      name: 'saleslist',
+      component: SalesList,
+    },
+  ];
+  const router = new VueRouter({
+    routes, // raccourci pour `routes: routes`
+  });
+
+  
 new Vue({
-  render: h => h(App)
-}).$mount("#app");
+    render: (h) => h(App),
+    router,
+  }).$mount('#app');
+  
 
 ```
 
@@ -132,61 +184,55 @@ Create First a file `LoginForm.vue` into your project, that will contain our aut
     <Header :title="title" />
 
     <div class="m-loginForm__group">
-      <animated-input placeholder="Customer Number" animateBorder />
+      <animated-input placeholder="Customer Number" animateBorder v-model="input.cnum"/>
     </div>
-
     <div class="m-loginForm__group">
-      <animated-input
-        placeholder="Customer Order"
-        animateBorder
-        inputType="password"
-      />
+      <animated-input placeholder="Customer Order" animateBorder inputType="password" v-model="input.cord"/>
     </div>
-
-    <div class="m-loginForm__group -mg-lg">
-      <div class="m-loginForm__rememberWrapper">
-        <custom-checkbox
-          name="remember_me"
-          id="remember_me"
-          labelText="Remember Me"
-          checkbox="✔︎"
-        ></custom-checkbox>
-
-        <link-button href="#" linkText="Forgot Cust">
-        </link-button>
-      </div>
+    
+    <div class="m-loginForm__group">
+      <router-link v-on:click="onloginTap()" to="/saleslist">
+            <submit-button >Log In</submit-button>
+      </router-link> 
     </div>
-
-
-    <submit-button>Log In</submit-button>
-
-     
-  <router-link to="/SalesList"> 
-  </router-link>
 
   </form>
-
 </template>
 
 <script>
 import Header from "./inputs/Header.vue";
 import AnimatedInput from "./inputs/AnimatedInput.vue";
-import CustomCheckbox from "./inputs/CustomCheckbox.vue";
-import LinkButton from "./buttons/LinkButton.vue";
 import SubmitButton from "./buttons/SubmitButton.vue";
 
 export default {
+  name: 'LoginForm',
   data() {
     return {
-      cnum: "000",
-      cord: "000"
+      login: { cnum: '', cord: ''},
+      input: {
+        cnum: '',
+        cord: '',
+      }
     };
+  },
+  methods: {
+    onLoginTap(){ 
+       if(this.input.cnum != '' && this.input.cord != '') {
+              if(this.login.input == this.$parent.mockAccount.cnum && this.input.cord == this.$parent.mockAccount.cord) {
+                this.$emit("authenticated", true);
+                this.$router.push('saleslist');
+            } else {
+                console.log("The customer order or number is incorrect");
+            }
+            } else {
+                console.log("A customer order or number must be present");
+            }
+          
+    }
   },
   components: {
     Header,
     AnimatedInput,
-    CustomCheckbox,
-    LinkButton,
     SubmitButton
   },
   props: {
@@ -197,46 +243,18 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/scss/components/forms/_loginForm.scss";
-
 </style>
 
 ``` 
 
-We will create then differents buttons and input so we can call them into our file `LoginForm.vue`.
+We will create a button and inputs, so we can call them into our file `LoginForm.vue`.
 
 Into the folder `components` :
 
 #### Folder Buttons
 ---
-- Create a folder `buttons`,  `components`. Inside create `LinkButton.vue` and `SubmitButtons.vue` files. 
+- Create a folder `buttons`,  `components`. Inside create  `SubmitButtons.vue` files. 
 
-
-##### LinkButton.vue
----
-```
-<template>
-  <a class="a-linkButton">
-    <!-- We can add fonts, texts etc -->
-    <slot></slot>
-  </a>
-</template>
-
-<script>
-export default {
-  props: {
-    linkText: {
-      type: String,
-      required: true
-    }
-  }
-};
-</script>
-
-<style lang="scss" scoped>
-@import "@/scss/components/buttons/_linkButton.scss";
-
-</style>
-```
 
 ##### SubmitButtons.vue
 --- 
@@ -385,6 +403,8 @@ Result :
 ## Create the list of sales order
 ---
 
+Now, we will create our second page, it's a table with all the sales Orders of our costumer order and number choosen before in the login page.
+
 Firstly, we will create a file `SalesList.vue`.
 
 #### SalesList.vue
@@ -417,7 +437,7 @@ Firstly, we will create a file `SalesList.vue`.
 import Table from './components/Table'
 
 export default {
-  name: 'FloatingButton',
+  name: 'SalesList',
 
   components: {
     Table
@@ -426,12 +446,12 @@ export default {
     tableData: undefined,
     config: [
       {
-        key: 'avatar',
+        key: 'salesdoc',
         title: 'SalesDoc.',
         type: 'number'
       },
       {
-        key: 'name',
+        key: 'status',
         title: 'Status',
         type: 'text'
       },
@@ -503,6 +523,7 @@ body {
 }
 
 </style>
+
 ```
 
 #### Table.vue
@@ -584,7 +605,7 @@ But what does it do ?
 
 - It adds icons in your assets folder. You will of course need to change them if you don't want your app to sport Angular logos as icons.
 
-> **Note :** More information about [PWA Here.](https://medium.com/poka-techblog/turn-your-angular-app-into-a-pwa-in-4-easy-steps-543510a9b626)
+> **Note :** More information about [PWA Here.](https://medium.com/the-web-tub/creating-your-first-vue-js-pwa-project-22f7c552fb34)
 
 ---
 
