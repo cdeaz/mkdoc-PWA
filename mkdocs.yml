@@ -7,13 +7,22 @@ nav:
       - Start with Angular: Angular/setup.md
       - Server-side Application: Angular/server.md
       - Start the project: Angular/start.md
+      - Test on real Phone: Angular/test.md
     - SAPUI5: 
       - Introduction: SAPUI5/about.md
       - Start with SAPUI5: SAPUI5/setup.md
       - Server-side Application: SAPUI5/server.md
       - Start the project: SAPUI5/start.md
+      - Test on real Phone: SAPUI5/test.md
     - Vue.js: 
       - Introduction: VueJS/about.md
       - Start with Vue.js: VueJS/setup.md
       - Server-side Application: VueJS/server.md
       - Start the project: VueJS/start.md
+      - Test on real Phone: VueJS/test.md
+    - React: 
+      - Introduction: React/about.md
+      - Start with Angular: React/setup.md
+      - Server-side Application: React/server.md
+      - Start the project: React/start.md
+      - Test on real Phone: React/test.md

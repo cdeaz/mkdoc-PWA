@@ -33,18 +33,31 @@ The application will allow the user to search medical products using a DataSourc
     - Create the Project [Start with Angular](Angular/start.md).
     - Server-side Application [here](Angular/server.md).
     - Why choose Angular ? [Answer](Angular/about/#why-choose-angular).
+    - Test on a real Phone. [Here](Angular/test.md).
 - SAPUI5 :
     - View the [SAPUI5 Introduction](SAPUI5/about.md).
     - What is the [Application we are creating](SAPUI5/about.md).
     - Create the Project [Start with SAPUI5](SAPUI5/start.md).
     - Server-side Application [here](SAPUI5/server.md).
     - Why choose SAPUI5 ? [Answer](SAPUI5/about/#why-choose-sapui5).
+    - Test on a real Phone. [Here](SAPUI5/test.md).
+
 - Vue.js :
     - View the [Vue.js Introduction](VueJS/about.md).
     - What is the [Application we are creating](VueJS/about.md).
     - Create the Project [Start with Vue.js](VueJS/start.md).
     - Server-side Application [here](VueJS/server.md).
     - Why choose Vue.js ? [Answer](VueJS/about/#why-choose-vuejs).
+    - Test on a real Phone. [Here](VueJS/test.md).
+
+- React : 
+    - View the [React Introduction](React/about.md).
+    - What is the [Application we are creating](React/about.md).
+    - Create the Project [Start with React](React/start.md).
+    - Server-side Application [here](React/server.md).
+    - Why choose React ? [Answer](React/about/#why-choose-react).
+    - Test on a real Phone. [Here](React/test.md).
+
 
 [appveyor-image]: https://img.shields.io/appveyor/ci/d0ugal/mkdocs/master.svg
 [appveyor-link]: https://ci.appveyor.com/project/d0ugal/mkdocs
